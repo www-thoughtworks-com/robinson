@@ -26,14 +26,21 @@ class Page
     page = Nokogiri::HTML(@fetcher.fetch(@path))
     links(page).select { |href| href.start_with?('/') || !href.start_with?('http') }
   end
+  def internal_pages
+    pages = []
+    internal_links.collect {|link| Page.new(@fetcher, link) }
+  end
+  def to_s
+    "Page: '#{@path}'"
+  end
   private
   def links(page)
     page.css('a').collect{ |a| a.attr('href') }
   end
 end
 
-def crawl page
-  puts page.internal_links
+def pages_under page
+  page.internal_pages
 end
 
-crawl Page.new(Fetcher.new(base), '/')
+puts pages_under(Page.new(Fetcher.new(base), '/'))
