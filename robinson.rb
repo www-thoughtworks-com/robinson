@@ -2,6 +2,7 @@
 
 require 'patron'
 require 'nokogiri'
+require 'set'
 
 base = ARGV.first.to_s
 puts "base: '#{base}'"
@@ -18,6 +19,7 @@ end
 
 
 class Page
+  attr_reader :path
   def initialize(fetcher, path)
     @fetcher = fetcher
     @path = path
@@ -28,7 +30,7 @@ class Page
   end
   def internal_pages
     pages = []
-    internal_links.collect {|link| Page.new(@fetcher, link) }
+    internal_links.collect {|link| Page.new(@fetcher, link) }.uniq { |page| page.path }
   end
   def to_s
     "Page: '#{@path}'"
