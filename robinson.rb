@@ -22,11 +22,18 @@ class Page
     @fetcher = fetcher
     @path = path
   end
-  def links
-    @page = Nokogiri::HTML(@fetcher.fetch(@path))
-    @page.css('a').collect{ |a| a.attr('href') }
+  def internal_links
+    page = Nokogiri::HTML(@fetcher.fetch(@path))
+    links(page).select { |href| href.start_with?('/') || !href.start_with?('http') }
+  end
+  private
+  def links(page)
+    page.css('a').collect{ |a| a.attr('href') }
   end
 end
 
+def crawl page
+  puts page.internal_links
+end
 
-puts Page.new(Fetcher.new(base), '/').links
+crawl Page.new(Fetcher.new(base), '/')
