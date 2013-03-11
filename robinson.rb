@@ -26,24 +26,53 @@ end
 
 class Reporter
   def on_see_link(uri)
-    #puts "seen: #{uri}"
   end
   def on_visit(uri, http_status_code)
-    puts "checked: #{uri} - #{http_status_code}"
+    puts "visited: #{uri} - #{http_status_code}"
+  end
+  def exit_code
+    0
   end
 end
 
-Anemone.crawl("http://#{address}") do |anemone|
-  reporter = Reporter.new
-  anemone.focus_crawl { |page|
-    page.links.each { |link| reporter.on_see_link(link) }
-    links = page.links.select { |uri|
-      link = Link.new(uri)
-      link.on_website?(address)
-    }
-    links
-  }
-  anemone.on_every_page { |page|
-    reporter.on_visit page.url, page.code
-  }
+class NoisyReporter < Reporter
+  def on_see_link(uri)
+    puts "seen: #{uri}"
+  end
 end
+
+class InvestigativeReporter < Reporter
+  def on_visit(uri, http_status_code)
+    if http_status_code >= 400
+      puts "BROKEN!!: #{uri} - #{http_status_code}"
+      @worst_case = http_status_code
+    else
+      puts "checked: #{uri} - #{http_status_code}"
+    end
+  end
+  def exit_code
+     if @worst_case == '200'
+       return 0
+     end
+     @worst_case
+  end
+end
+
+def crawl(address, reporter = InvestigativeReporter.new)
+  Anemone.crawl("http://#{address}") do |anemone|
+    anemone.focus_crawl { |page|
+      page.links.each { |link| reporter.on_see_link(link) }
+      links = page.links.select { |uri|
+        link = Link.new(uri)
+        link.on_website?(address)
+      }
+      links
+    }
+    anemone.on_every_page { |page|
+      reporter.on_visit page.url, page.code
+    }
+  end
+  exit((reporter.exit_code))
+end
+
+crawl address
