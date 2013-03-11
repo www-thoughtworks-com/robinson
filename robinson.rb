@@ -2,18 +2,25 @@
 
 def usage weirdness = ''
   if weirdness.length > 0
-    puts "Sorry, #{weirdness}\n"
+    puts "\nSorry, #{weirdness}\n\n"
   end
-  puts "Usage: ./robinson <host>[:<port>]"
+  puts "Usage: ./robinson <host>[:<port>] [--ignoring <ignorepath> [...]"
   puts "  e.g. ./robinson www.example.com"
-  puts "  e.g. ./robinson localhost:8080"
+  puts "  e.g. ./robinson localhost:8080 --ignoring /blogfeed /external_content"
   exit 1
 end
 
-
 address = ARGV.first.to_s
+ignoring_pages = ARGV.include? '--ignoring'
+ignored_pages = ARGV.slice(2..(ARGV.size))
 if address.include? '/' then usage('only accepts website server host[:port], not paths') end
 if address.empty? then usage('you need to pass in the website server host[:port]') end
+if ignoring_pages
+  if ignored_pages.empty? then usage('you need to specify the paths of the pages to ignore') end
+  ignored_pages.each { |path|
+    if !path.start_with?('/') then usage("the ignored pages' paths must all start with / character") end
+  }
+end
 
 puts "Website server to check: '#{address}' - NB. only internal links will be checked"
 
@@ -97,13 +104,13 @@ class Page
   end
 end
 
-def crawl(address, reporter = InvestigativeReporter.new)
+def crawl(address, ignored_paths = [], reporter = InvestigativeReporter.new)
   Anemone.crawl("http://#{address}") do |anemone|
     anemone.focus_crawl { |page|
       page.links.each { |link| reporter.on_see_link(link) }
       links = page.links.select { |uri|
         link = Link.new(uri)
-        link.on_website?(address)
+        link.on_website?(address) && !ignored_paths.include?(uri.path)
       }
       links
     }
@@ -116,4 +123,4 @@ def crawl(address, reporter = InvestigativeReporter.new)
   exit(exit_code)
 end
 
-crawl address
+crawl address, ignored_pages
