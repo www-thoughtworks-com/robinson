@@ -1,11 +1,23 @@
 #!/bin/ruby
 
+def usage weirdness = ''
+  if weirdness.length > 0
+    puts "Sorry, #{weirdness}\n"
+  end
+  puts "Usage: ./robinson <host>[:<port>]"
+  puts "  e.g. ./robinson www.example.com"
+  puts "  e.g. ./robinson localhost:8080"
+  exit 1
+end
+
 
 address = ARGV.first.to_s
-puts "address: '#{address}'"
+if address.include? '/' then usage('only accepts website server host[:port], not paths') end
+if address.empty? then usage('you need to pass in the website server host[:port]') end
+
+puts "Website server to check: '#{address}' - NB. only internal links will be checked"
 
 require 'anemone'
-
 
 class Link
   def initialize(uri)
