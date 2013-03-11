@@ -107,12 +107,15 @@ class Page
   end
   def puts
     if unfetchable?
-      $stdout.puts "BROKEN!!: #{@page.url} - no http response".colored.red
+      $stdout.puts(pagelog("BROKEN!!", 'no http response').colored.red)
     elsif broken?
-      $stdout.puts "BROKEN!!: #{@page.url} - #{@page.code}".colored.red
+      $stdout.puts(pagelog("BROKEN!!", @page.code).colored.red)
     else
-      $stdout.puts "checked: #{@page.url} - #{@page.code}".colored.green
+      $stdout.puts(pagelog("checked", @page.code).colored.green)
     end
+  end
+  def pagelog(what, code)
+      "#{what}: #{@page.url} - #{code} (referer: #{@page.referer})"
   end
   def unfetchable?
     @page.code.nil?
