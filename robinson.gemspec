@@ -6,8 +6,7 @@ Gem::Specification.new do |s|
   s.summary = 'A working website link checker'
   s.files = [
     "Gemfile",
-    "robinson.rb",
-    "robinson"
+    "lib/robinson.rb"
   ]
   s.executables << 'robinson'
 end
