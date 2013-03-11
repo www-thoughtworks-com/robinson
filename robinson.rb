@@ -55,9 +55,16 @@ class InvestigativeReporter < Reporter
     page.puts
   end
   def exit_code
-     puts "\nBroken links (#{@broken.size} out of #{@ok.size}):"
-     @broken.each { |page| page.puts }
-     @broken.size
+    @broken.empty? ? success : failure
+  end
+  def success
+    puts "\nAll links (#{@ok.size}) check out OK."
+    0
+  end
+  def failure
+    puts "\nBroken links (#{@broken.size} out of #{@ok.size}):"
+    @broken.each { |page| page.puts }
+    @broken.size
   end
 end
 

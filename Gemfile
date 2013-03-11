@@ -1,6 +1,5 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-gem "patron"
-gem "nokogiri"
+gem "smart_colored"
 gem "anemone"
