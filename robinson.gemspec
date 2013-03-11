@@ -8,6 +8,9 @@ Gem::Specification.new do |s|
     "Gemfile",
     "lib/robinson.rb"
   ]
+  s.add_dependency "anemone"
+  s.add_dependency "smart_colored"
+  
   s.executables << 'robinson'
 end
 
