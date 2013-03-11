@@ -18,6 +18,7 @@ if address.empty? then usage('you need to pass in the website server host[:port]
 puts "Website server to check: '#{address}' - NB. only internal links will be checked"
 
 require 'anemone'
+require 'smart_colored'
 
 class Link
   def initialize(uri)
@@ -86,9 +87,9 @@ class Page
   end
   def puts
     if broken?
-      $stdout.puts "BROKEN!!: #{@page.url} - #{@page.code}"
+      $stdout.puts "BROKEN!!: #{@page.url} - #{@page.code}".colored.red
     else
-      $stdout.puts "checked: #{@page.url} - #{@page.code}"
+      $stdout.puts "checked: #{@page.url} - #{@page.code}".colored.green
     end
   end
   def broken?
