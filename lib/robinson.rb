@@ -106,13 +106,21 @@ class Page
     @page = anemone_page
   end
   def puts
-    if broken?
+    if unfetchable?
+      $stdout.puts "BROKEN!!: #{@page.url} - no http response".colored.red
+    elsif broken?
       $stdout.puts "BROKEN!!: #{@page.url} - #{@page.code}".colored.red
     else
       $stdout.puts "checked: #{@page.url} - #{@page.code}".colored.green
     end
   end
+  def unfetchable?
+    @page.code.nil?
+  end
   def broken?
+    if unfetchable?
+      return true 
+    end
     @page.code >= 400
   end
 end
