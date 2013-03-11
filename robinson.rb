@@ -42,16 +42,19 @@ class NoisyReporter < Reporter
 end
 
 class InvestigativeReporter < Reporter
+  def initialize
+    @worst_case = 200
+  end
   def on_visit(uri, http_status_code)
     if http_status_code >= 400
       puts "BROKEN!!: #{uri} - #{http_status_code}"
-      @worst_case = http_status_code
+      @worst_case = http_status_code > @worst_case ? http_status_code : @worst_case
     else
       puts "checked: #{uri} - #{http_status_code}"
     end
   end
   def exit_code
-     if @worst_case == '200'
+     if @worst_case == 200
        return 0
      end
      @worst_case
@@ -72,7 +75,9 @@ def crawl(address, reporter = InvestigativeReporter.new)
       reporter.on_visit page.url, page.code
     }
   end
-  exit((reporter.exit_code))
+  exit_code = reporter.exit_code
+  puts "finished (#{exit_code})" 
+  exit(exit_code)
 end
 
 crawl address
