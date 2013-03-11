@@ -9,5 +9,6 @@ Gem::Specification.new do |s|
     "robinson.rb",
     "robinson"
   ]
+  s.executables << 'robinson'
 end
 
