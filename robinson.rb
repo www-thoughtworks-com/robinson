@@ -27,8 +27,8 @@ end
 class Reporter
   def on_see_link(uri)
   end
-  def on_visit(uri, http_status_code)
-    puts "visited: #{uri} - #{http_status_code}"
+  def on_visit(page)
+    page.puts
   end
   def exit_code
     0
@@ -43,21 +43,37 @@ end
 
 class InvestigativeReporter < Reporter
   def initialize
-    @worst_case = 200
+    @broken = []
+    @ok = []
   end
-  def on_visit(uri, http_status_code)
-    if http_status_code >= 400
-      puts "BROKEN!!: #{uri} - #{http_status_code}"
-      @worst_case = http_status_code > @worst_case ? http_status_code : @worst_case
+  def on_visit(page)
+    if page.broken?
+      @broken << page
     else
-      puts "checked: #{uri} - #{http_status_code}"
+      @ok << page
     end
+    page.puts
   end
   def exit_code
-     if @worst_case == 200
-       return 0
-     end
-     @worst_case
+     puts "\nBroken links (#{@broken.size} out of #{@ok.size}):"
+     @broken.each { |page| page.puts }
+     @broken.size
+  end
+end
+
+class Page
+  def initialize(anemone_page)
+    @page = anemone_page
+  end
+  def puts
+    if broken?
+      $stdout.puts "BROKEN!!: #{@page.url} - #{@page.code}"
+    else
+      $stdout.puts "checked: #{@page.url} - #{@page.code}"
+    end
+  end
+  def broken?
+    @page.code >= 400
   end
 end
 
@@ -71,8 +87,8 @@ def crawl(address, reporter = InvestigativeReporter.new)
       }
       links
     }
-    anemone.on_every_page { |page|
-      reporter.on_visit page.url, page.code
+    anemone.on_every_page { |anemone_page|
+      reporter.on_visit Page.new(anemone_page)
     }
   end
   exit_code = reporter.exit_code
