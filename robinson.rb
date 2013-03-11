@@ -12,7 +12,7 @@ class Link
     @uri = uri
   end
   def on_website?(address)
-    puts "#{host_and_port} vs #{host_and_port_of(address)}"
+    #puts "#{host_and_port} vs #{host_and_port_of(address)}"
     host_and_port == host_and_port_of(address)
   end
   private
@@ -24,19 +24,26 @@ class Link
   end
 end
 
+class Reporter
+  def on_see_link(uri)
+    #puts "seen: #{uri}"
+  end
+  def on_visit(uri, http_status_code)
+    puts "checked: #{uri} - #{http_status_code}"
+  end
+end
 
 Anemone.crawl("http://#{address}") do |anemone|
+  reporter = Reporter.new
   anemone.focus_crawl { |page|
-    puts "focus_crawl: #{page}"
-    page.links.each { |link| puts "any page link: #{link}" }
+    page.links.each { |link| reporter.on_see_link(link) }
     links = page.links.select { |uri|
       link = Link.new(uri)
       link.on_website?(address)
     }
-    links.each { |link| puts "focus on link (internal): #{link}" }
     links
   }
   anemone.on_every_page { |page|
-    puts "on every page: #{page.url}"
+    reporter.on_visit page.url, page.code
   }
 end
