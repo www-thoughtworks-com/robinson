@@ -28,9 +28,9 @@ class Invocation
     if weirdness.length > 0
       puts "\nSorry, #{weirdness}\n\n"
     end
-    puts "Usage: ./robinson <host>[:<port>] [--ignoring <ignorepath> [...]"
-    puts "  e.g. ./robinson www.example.com"
-    puts "  e.g. ./robinson localhost:8080 --ignoring /blogfeed /external_content"
+    puts "Usage: robinson <host>[:<port>] [--ignoring <ignorepath> [...]"
+    puts "  e.g. robinson www.example.com"
+    puts "  e.g. robinson localhost:8080 --ignoring /blogfeed /external_content"
     exit 1
   end
 end
