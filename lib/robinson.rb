@@ -4,10 +4,10 @@ class Invocation
   def initialize(args)
     @address = args.first || ''
     @ignoring_pages = args.include? '--ignoring'
-    @ignored_pages = args.slice(2..(args.size)) || []
+    @ignored_pages = args.slice(2..(args.size)).map { |string| Regexp.new(string) } || []
   end
 
-  def execute 
+  def execute
     check_args
     Robinson.crawl @address, @ignored_pages
   end
@@ -18,20 +18,20 @@ class Invocation
     if @address.empty? then usage('you need to pass in the website server host[:port]') end
     if @ignoring_pages
       usage('you need to specify the paths of the pages to ignore') if @ignored_pages.empty?
-      usage("the ignored pages' paths must all start with / character") if @ignored_pages.any? { |path| !path.start_with?('/') }
     end
   end
-  
+
   def usage weirdness = ''
     if weirdness.length > 0
       puts "\nSorry, #{weirdness}\n\n"
     end
-    puts "Usage: robinson <host>[:<port>] [--ignoring <ignorepath> [...]"
-    puts "  e.g. robinson www.example.com"
-    puts "  e.g. robinson localhost:8080 --ignoring /blogfeed /external_content"
+    puts 'Usage: robinson <host>[:<port>] [--ignoring <ignoreregex> [...]'
+    puts '  e.g. robinson www.example.com'
+    puts '  e.g. robinson localhost:8080 --ignoring ^(?:/..)?/blogs/?.* ^(?:/..)?/products/?.*'
     exit 1
   end
 end
+
 
 
 
@@ -113,14 +113,14 @@ class Page
     end
   end
   def pagelog(what, code)
-      "#{what}: #{@page.url} - #{code} (referer: #{@page.referer})"
+    "#{what}: #{@page.url} - #{code} (referer: #{@page.referer})"
   end
   def unfetchable?
     @page.code.nil?
   end
   def broken?
     if unfetchable?
-      return true 
+      return true
     end
     @page.code >= 400
   end
@@ -148,7 +148,7 @@ class Robinson
     end
 
     exit_code = reporter.exit_code
-    puts "finished (#{exit_code})" 
+    puts "finished (#{exit_code})"
     exit(exit_code)
 
   end
