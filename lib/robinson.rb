@@ -17,10 +17,8 @@ class Invocation
     if @address.include? '/' then usage('only accepts website server host[:port], not paths') end
     if @address.empty? then usage('you need to pass in the website server host[:port]') end
     if @ignoring_pages
-      if @ignored_pages.empty? then usage('you need to specify the paths of the pages to ignore') end
-      @ignored_pages.each { |path|
-        if !path.start_with?('/') then usage("the ignored pages' paths must all start with / character") end
-      }
+      usage('you need to specify the paths of the pages to ignore') if @ignored_pages.empty?
+      usage("the ignored pages' paths must all start with / character") if @ignored_pages.any? { |path| !path.start_with?('/') }
     end
   end
   
@@ -130,23 +128,29 @@ end
 
 class Robinson
   def self.crawl(address, ignored_paths = [], reporter = InvestigativeReporter.new)
+
     puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
     Anemone.crawl("http://#{address}") do |anemone|
+
       anemone.focus_crawl { |page|
         page.links.each { |link| reporter.on_see_link(link) }
         links = page.links.select { |uri|
           link = Link.new(uri)
-          link.on_website?(address) && !ignored_paths.include?(uri.path)
+          link.on_website?(address) && !ignored_paths.any? { |path| !!(path =~ uri.path)  }
         }
         links
       }
+
       anemone.on_every_page { |anemone_page|
         reporter.on_visit Page.new(anemone_page)
       }
+
     end
+
     exit_code = reporter.exit_code
     puts "finished (#{exit_code})" 
     exit(exit_code)
+
   end
 end
 
