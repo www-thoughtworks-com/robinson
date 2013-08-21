@@ -14,3 +14,8 @@ usage
   
     e.g. robinson www.example.com
     e.g. robinson localhost:8080 --ignoring /blogfeed /external_content
+
+notes
+-----
+
+Checks only internal links on site (this is anemone behaviour, which is used for the actual crawling).
