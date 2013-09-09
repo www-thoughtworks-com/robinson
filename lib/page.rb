@@ -25,4 +25,8 @@ class Page
     end
     @page.code >= 400
   end
+
+  def url
+    @page.url
+  end
 end
