@@ -20,12 +20,12 @@ describe 'Robinson' do
     @@exit_code.should eq 0
   end
 
-  xit 'ignores the specified links' do
+  it 'ignores the specified links' do
     reporter = TestExpectationReporter.new
     host = 'localhost:6161'
     Robinson.crawl(host, [%r{^/#}], reporter)
 
-    visited_urls(reporter).should == ["http://#{host}/", "http://#{host}/some-page"]
+    visited_urls(reporter).should == %W(http://#{host}/ http://#{host}/some-page)
   end
 
 end
@@ -59,7 +59,6 @@ class FakeWebsite < Sinatra::Base
       <body>
         <a href="/some-page">Some page</a>
         <a href="#some-anchor">First anchor</a>
-        <a href="#What%20is%20NoSQL?">Second anchor</a>
       </body>
     </html>
 
