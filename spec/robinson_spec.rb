@@ -15,17 +15,17 @@ describe 'Robinson' do
     FakeWebsite.stop_service
   end
 
-  it 'should check links on TW.com homepage' do
+  it 'should return 0 status code on success' do
     robinson_main(%w(www.thoughtworks.com --ignoring ^/.+))
     @@exit_code.should eq 0
   end
 
-  it 'ignores the specified links' do
+  it 'should only follow links' do
     reporter = TestExpectationReporter.new
     host = 'localhost:6161'
-    Robinson.crawl(host, [%r{^/#}], reporter)
+    Robinson.crawl(host, [], reporter)
 
-    visited_urls(reporter).should == %W(http://#{host}/ http://#{host}/some-page)
+    visited_urls(reporter).should =~ %W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
   end
 
 end
@@ -57,6 +57,7 @@ class FakeWebsite < Sinatra::Base
       <head>
       </head>
       <body>
+        <a href="/some-page?a=b">Some page</a>
         <a href="/some-page">Some page</a>
         <a href="#some-anchor">First anchor</a>
       </body>
