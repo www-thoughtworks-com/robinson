@@ -1,3 +1,3 @@
 #!/usr/bin/env ruby
-require 'robinson'
+require_relative '../lib/invocation'
 robinson_main(ARGV)

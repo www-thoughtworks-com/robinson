@@ -1,0 +1,70 @@
+# This should work for both linux and OS X.  Windows users you're SOL with this script.
+function add_to_path() {
+    NEW_PATH=$1
+    echo $PATH|grep $NEW_PATH > /dev/null 2>&1
+    ALREADY_ON_PATH=$?
+    if [ 0 -ne $ALREADY_ON_PATH ]; then
+      echo "Adding ${NEW_PATH} to path..."
+      PATH=$NEW_PATH:$PATH
+      export PATH
+    fi
+}
+
+
+function upgrade_rvm_if_needed() {
+  echo "Checking latest stable RVM version"
+  curl --silent https://raw.github.com/wayneeseguin/rvm/stable/VERSION > stable.rvm.version
+  rvm --version | grep -f stable.rvm.version
+  RETVAL=$?
+  if [ $RETVAL -ne 0 ]; then
+    echo "Trying to upgrade RVM..."
+    rvm get latest
+  fi
+}
+
+
+export CC=gcc
+
+if [ ! -d ~/.rvm ]; then
+  echo "Installing RVM..."
+  curl -L https://get.rvm.io | bash -s stable --ruby
+else
+  add_to_path ~/.rvm/bin
+  upgrade_rvm_if_needed
+fi
+
+echo "Sourcing RVM..."
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
+OS=`uname`
+if [[ "$OS" == "Darwin" ]]; then
+  export RUBY_VER=ruby-1.9.3-p286
+else
+  export RUBY_VER=ruby-1.9.3-p0
+fi
+
+rvm list rubies | grep $RUBY_VER > /dev/null
+RUBY_INSTALLED=$?
+if [ 0 -ne $RUBY_INSTALLED ]; then
+  echo "Installing Ruby $RUBY_VER..."
+  rvm install $RUBY_VER
+fi
+
+BUNDLER_VERSION=$(bundle --version)
+if [ "Bundler version 1.3.2" != "$BUNDLER_VERSION" ]; then
+  echo "Installing bundler..."
+  gem install --no-ri --no-rdoc bundler -v1.3.2
+fi
+
+echo "Installing Gem Bundles..."
+bundle install --binstubs --without=production --quiet
+
+add_to_path `pwd`/bin
+# Adding latest installed version of phantomjs
+add_to_path $(dirname $(find ~/.phantomjs -type f -name phantomjs|sort -r|head -n1))
+
+if [ ! -d /var/cache/rack/website ]; then
+  echo "Creating Rack Cache Directory..."
+  sudo mkdir -p /var/cache/rack/website
+  sudo chmod 777 /var/cache/rack/website
+fi
