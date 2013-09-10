@@ -21,6 +21,7 @@ test/version_tmp
 tmp
 bin
 vendor
+stable.rvm.version
 
 # YARD artifacts
 .yardoc
