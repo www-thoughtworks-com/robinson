@@ -21,8 +21,9 @@ describe 'Robinson' do
   end
 
   describe 'link following' do
-    let(:reporter) { TestExpectationReporter.new }
-    let(:host) {'localhost:6161'}
+    host = 'localhost:6161'
+
+    reporter = TestExpectationReporter.new
 
     before :all do
       Robinson.crawl(host, [], reporter)

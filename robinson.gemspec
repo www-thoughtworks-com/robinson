@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name = 'robinson'
-  s.version = '0.0.4'
+  s.version = '0.0.5'
   s.date = '2013-03-13'
   s.authors = 'damned'
-  s.summary = 'A working website link checker'
+  s.summary = 'A mainly working website link checker'
   s.files = %w(Gemfile
               lib/robinson.rb
               lib/investigative_reporter.rb
