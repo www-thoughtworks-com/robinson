@@ -20,14 +20,30 @@ describe 'Robinson' do
     @@exit_code.should eq 0
   end
 
-  it 'should only follow links' do
-    reporter = TestExpectationReporter.new
-    host = 'localhost:6161'
-    Robinson.crawl(host, [], reporter)
+  describe 'link following' do
+    let(:reporter) { TestExpectationReporter.new }
+    let(:host) {'localhost:6161'}
 
-    visited_urls(reporter).should =~ %W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
+    before :all do
+      Robinson.crawl(host, [], reporter)
+    end
+
+    it 'should follow non-anchored links' do
+      visited_urls(reporter).should include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
+    end
+
+    it 'should follow path of path and anchor link' do
+      visited_urls(reporter).should include "http://#{host}/some/path/with/anchor"
+    end
+
+    it 'should not follow simple in-page anchor' do
+      visited_urls(reporter).should_not include "http://#{host}/#some-anchor"
+    end
+
+    it 'should follow path of link with crappy anchor that has lots of non-html-spec chars in it' do
+      visited_urls(reporter).should include "http://#{host}/path/with/crappy/anchor.in.it"
+    end
   end
-
 end
 
 def visited_urls(reporter)
@@ -60,6 +76,8 @@ class FakeWebsite < Sinatra::Base
         <a href="/some-page?a=b">Some page</a>
         <a href="/some-page">Some page</a>
         <a href="#some-anchor">First anchor</a>
+        <a href="/some/path/with/anchor#anchor-should-be-removed">Path and anchor</a>
+        <a href="/path/with/crappy/anchor.in.it#anchor-with-lots-of.crap@$%^&*(.in-it">Crappy anchor</a>
       </body>
     </html>
 

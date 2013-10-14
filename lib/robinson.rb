@@ -4,6 +4,24 @@ require_relative 'link'
 require_relative 'page'
 require_relative 'investigative_reporter'
 
+module Anemone
+  class Page
+    def to_absolute(link)
+      return nil if link.nil?
+
+      # remove anchor
+      link = URI.encode(URI.decode(link.to_s.gsub(/#.*/,'')))
+
+      relative = URI(link)
+      absolute = base ? base.merge(relative) : @url.merge(relative)
+
+      absolute.path = '/' if absolute.path.empty?
+
+      return absolute
+    end
+  end
+end
+
 class Robinson
   def self.crawl(address, ignored_paths = [], reporter = InvestigativeReporter.new)
 

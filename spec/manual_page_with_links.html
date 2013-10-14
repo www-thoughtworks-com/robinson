@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Showing how crappy the links can be that browsers will handle</title>
+</head>
+<body>
+    <a href="/some-page?a=b">Some page</a>
+    <a href="/some-page">Some page</a>
+    <a href="#some-anchor">First anchor</a>
+    <a href="/some/path/with/anchor#anchor-should-be-removed">Path and anchor</a>
+    <a href="/a/b/html#anchor-with-a-dot.in-it">Weird anchor</a>
+    <div id="anchor-with-a-dot.in-it" >has id with a dot in it</div>
+    <a href="#anchor-with-a-dot.in-it">Dot anchor</a>
+    <a href="#anchor-with-a-percent%in-it">Percent anchor</a>
+    <div id="anchor-with-a-percent%in-it" >has id with a percent in it</div>
+    <a href="#anchor-with-all-kinds-of-crap@£$%^&*(in-it">Crap</a>
+    <div id="anchor-with-all-kinds-of-crap@£$%^&*(in-it" >has loads of crap in it</div>
+</body>
+</html>
