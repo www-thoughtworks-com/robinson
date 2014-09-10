@@ -6,6 +6,7 @@ class Options
   def parse(args)
     options = OpenStruct.new
     options.delay = 0
+    options.threads = 2
     options.ignoring = []
 
     opt_parser = OptionParser.new do |opts|
@@ -18,6 +19,10 @@ class Options
 
       opts.on('--delay [n]', Float, 'Delay [n] seconds between link checking requests') do |n|
         options.delay = n
+      end
+
+      opts.on('--threads [n]', Integer, 'Use [n] threads for sending requests to the target website') do |n|
+        options.threads = n
       end
 
       opts.on('--ignoring [pattern1] [pattern2] [pattern3] ...', String, 'Ignores the list of URLs that match these patterns') do |first_pattern|
