@@ -20,17 +20,17 @@ describe 'Robinson' do
   describe 'command line usage' do
 
     it 'should return 0 status code on success' do
-      robinson_main [ host, '--ignoring ^/.+']
+      robinson_main [ host, '--ignoring','^/.+']
       @@exit_code.should eq 0
     end
 
     it 'should allow throttling of requests' do
-      robinson_main([host, '--delay 0.5' , '--ignoring ^/.+'])
+      robinson_main([host, '--delay','0.5'])
       @@exit_code.should eq 0
     end
 
-    xit 'should fail on unknown options' do
-      robinson_main(%w(integration.thoughtworks.com --freeble-goodies))
+    it 'should fail on unknown options' do
+      robinson_main([host,'--freeble-goodies'])
       expect(@@exit_code).to_not eq 0
     end
   end
@@ -41,6 +41,8 @@ describe 'Robinson' do
     before :all do
       Robinson.crawl(host, [], [], reporter)
     end
+
+
 
     it 'should follow non-anchored links' do
       visited_urls(reporter).should include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)

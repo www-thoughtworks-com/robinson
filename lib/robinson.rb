@@ -23,7 +23,7 @@ module Anemone
 end
 
 class Robinson
-  def self.crawl(address, ignored_paths = [], options= [], reporter = InvestigativeReporter.new)
+  def self.crawl(address, ignored_paths = [], delay = 0.0, reporter = InvestigativeReporter.new)
 
     puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
     Anemone.crawl("http://#{address}") do |anemone|

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'robinson'
-  s.version = '0.0.5'
-  s.date = '2013-03-13'
+  s.version = '0.0.6'
+  s.date = '2014-09-20'
   s.authors = 'damned'
   s.summary = 'A mainly working website link checker'
   s.files = %w(Gemfile
