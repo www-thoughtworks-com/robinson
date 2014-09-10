@@ -15,18 +15,31 @@ describe 'Robinson' do
     FakeWebsite.stop_service
   end
 
-  it 'should return 0 status code on success' do
-    robinson_main(%w(www.thoughtworks.com --ignoring ^/.+))
-    @@exit_code.should eq 0
+  let(:host) { 'localhost:6161' }
+
+  describe 'command line usage' do
+
+    it 'should return 0 status code on success' do
+      robinson_main [ host, '--ignoring ^/.+']
+      @@exit_code.should eq 0
+    end
+
+    it 'should allow throttling of requests' do
+      robinson_main([host, '--delay 0.5' , '--ignoring ^/.+'])
+      @@exit_code.should eq 0
+    end
+
+    xit 'should fail on unknown options' do
+      robinson_main(%w(integration.thoughtworks.com --freeble-goodies))
+      expect(@@exit_code).to_not eq 0
+    end
   end
 
   describe 'link following' do
-    host = 'localhost:6161'
-
-    reporter = TestExpectationReporter.new
+    let(:reporter) {TestExpectationReporter.new}
 
     before :all do
-      Robinson.crawl(host, [], reporter)
+      Robinson.crawl(host, [], [], reporter)
     end
 
     it 'should follow non-anchored links' do

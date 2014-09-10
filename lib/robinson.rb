@@ -23,7 +23,7 @@ module Anemone
 end
 
 class Robinson
-  def self.crawl(address, ignored_paths = [], reporter = InvestigativeReporter.new)
+  def self.crawl(address, ignored_paths = [], options= [], reporter = InvestigativeReporter.new)
 
     puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
     Anemone.crawl("http://#{address}") do |anemone|
@@ -39,6 +39,7 @@ class Robinson
 
   def self.crawl_all_pages_for_links(address, anemone, ignored_paths, reporter)
     anemone.focus_crawl { |page|
+      puts "#{Time.now}: focus page is #{page.url}"
       report_links_on_page(page, reporter)
       get_relevant_links_on_page(address, ignored_paths, page)
     }
@@ -46,6 +47,7 @@ class Robinson
 
   def self.visit_page_links(anemone, reporter)
     anemone.on_every_page { |anemone_page|
+      puts "#{Time.now}: visit page is #{anemone_page.url}"
       reporter.on_visit Page.new(anemone_page)
     }
   end
