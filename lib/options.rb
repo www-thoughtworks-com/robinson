@@ -5,7 +5,7 @@ class Options
 
   def parse(args)
     options = OpenStruct.new
-    options.delay = 0.0
+    options.delay = 0
     options.ignoring = []
 
     opt_parser = OptionParser.new do |opts|

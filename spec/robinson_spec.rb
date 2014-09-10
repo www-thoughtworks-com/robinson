@@ -36,28 +36,37 @@ describe 'Robinson' do
   end
 
   describe 'link following' do
-    let(:reporter) {TestExpectationReporter.new}
 
     before :all do
-      Robinson.crawl(host, [], [], reporter)
+      @reporter = TestExpectationReporter.new
+      Robinson.crawl('localhost:6161', [], 0, @reporter)
     end
 
+    it 'should delay the spidering' do
+      delay = 0.05
+      reporter = TestExpectationReporter.new
 
+      start = Time.now
+      Robinson.crawl(host, [], delay, reporter)
+      duration = Time.now - start
+
+      expect(duration).to be >= ((visited_urls(reporter).count - 1) * delay)
+    end
 
     it 'should follow non-anchored links' do
-      visited_urls(reporter).should include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
+      visited_urls(@reporter).should include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
     end
 
     it 'should follow path of path and anchor link' do
-      visited_urls(reporter).should include "http://#{host}/some/path/with/anchor"
+      visited_urls(@reporter).should include "http://#{host}/some/path/with/anchor"
     end
 
     it 'should not follow simple in-page anchor' do
-      visited_urls(reporter).should_not include "http://#{host}/#some-anchor"
+      visited_urls(@reporter).should_not include "http://#{host}/#some-anchor"
     end
 
     it 'should follow path of link with crappy anchor that has lots of non-html-spec chars in it' do
-      visited_urls(reporter).should include "http://#{host}/path/with/crappy/anchor.in.it"
+      visited_urls(@reporter).should include "http://#{host}/path/with/crappy/anchor.in.it"
     end
   end
 end
