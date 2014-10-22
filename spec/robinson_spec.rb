@@ -69,6 +69,20 @@ describe 'Robinson' do
       visited_urls(@reporter).should include "http://#{host}/path/with/crappy/anchor.in.it"
     end
   end
+
+  describe 'link following' do
+
+    before :all do
+      @reporter = TestExpectationReporter.new
+      Robinson.crawl_images('localhost:6161', [], 0, @reporter)
+    end
+
+    it 'should follow path of img src' do
+      puts visited_urls(@reporter)
+      visited_urls(@reporter).should include "http://#{host}/relative-test-image-link"
+    end
+  end
+
 end
 
 def visited_urls(reporter)
@@ -103,6 +117,7 @@ class FakeWebsite < Sinatra::Base
         <a href="#some-anchor">First anchor</a>
         <a href="/some/path/with/anchor#anchor-should-be-removed">Path and anchor</a>
         <a href="/path/with/crappy/anchor.in.it#anchor-with-lots-of.crap@$%^&*(.in-it">Crappy anchor</a>
+        <img src="/relative-test-image-link"/>
       </body>
     </html>
 

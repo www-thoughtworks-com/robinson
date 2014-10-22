@@ -17,7 +17,7 @@ module Anemone
 
       absolute.path = '/' if absolute.path.empty?
 
-      return absolute
+      absolute
     end
   end
 end
@@ -37,11 +37,31 @@ class Robinson
 
   end
 
+  def self.crawl_images(address, ignored_paths = [], delay = 0, reporter = InvestigativeReporter.new)
+    puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
+    Anemone.crawl("http://#{address}", { delay: delay }) do |anemone|
+      crawl_all_pages_for_images(address, anemone, ignored_paths, reporter)
+      visit_page_links(anemone, reporter)
+    end
+
+    exit_code = reporter.exit_code
+    puts "finished (#{exit_code})"
+    exit(exit_code)
+  end
+
   def self.crawl_all_pages_for_links(address, anemone, ignored_paths, reporter)
     anemone.focus_crawl { |page|
       puts "#{Time.now}: focus page is #{page.url}"
       report_links_on_page(page, reporter)
       get_relevant_links_on_page(address, ignored_paths, page)
+    }
+  end
+
+  def self.crawl_all_pages_for_images(address, anemone, ignored_paths, reporter)
+    anemone.focus_crawl { |page|
+      puts "#{Time.now}: focus page is #{page.url}"
+      report_images_on_page(page, reporter)
+      get_relevant_image_links_on_page(address, ignored_paths, page)
     }
   end
 
@@ -56,10 +76,24 @@ class Robinson
     page.links.each { |link| reporter.on_see_link(link) }
   end
 
+  def self.report_images_on_page(page, reporter)
+    page.doc.search('//img[@src]').each { |img|
+      reporter.on_see_link(page.to_absolute(img['src']))
+    }
+  end
+
   def self.get_relevant_links_on_page(address, ignored_paths, page)
     page.links.select { |uri|
       is_relevant_link?(address, ignored_paths, uri)
     }
+  end
+
+  def self.get_relevant_image_links_on_page(address, ignored_paths, page)
+    links = []
+    page.doc.search('//img[@src]').select { |img|
+      links << page.to_absolute(img['src'])
+    }
+    links
   end
 
   def self.is_relevant_link?(address, ignored_paths, uri)
