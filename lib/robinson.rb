@@ -10,7 +10,7 @@ module Anemone
       return nil if link.nil?
 
       # remove anchor
-      link = URI.encode(URI.decode(link.to_s.gsub(/#.*/,'')))
+      link = URI.encode(URI.decode(link.to_s.gsub(/#.*/, '')))
 
       relative = URI(link)
       absolute = base ? base.merge(relative) : @url.merge(relative)
@@ -26,7 +26,7 @@ class Robinson
   def self.crawl(address, ignored_paths = [], delay = 0, reporter = InvestigativeReporter.new)
 
     puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
-    Anemone.crawl("http://#{address}", { delay: delay }) do |anemone|
+    Anemone.crawl("http://#{address}", {delay: delay}) do |anemone|
       crawl_all_pages_for_links(address, anemone, ignored_paths, reporter)
       visit_page_links(anemone, reporter)
     end
@@ -39,7 +39,7 @@ class Robinson
 
   def self.crawl_images(address, ignored_paths = [], delay = 0, reporter = InvestigativeReporter.new)
     puts "Website server to check: '#{address}', ignoring paths '#{ignored_paths.join(', ')}' - NB. only internal links will be checked"
-    Anemone.crawl("http://#{address}", { delay: delay }) do |anemone|
+    Anemone.crawl("http://#{address}", {delay: delay}) do |anemone|
       crawl_all_pages_for_images(address, anemone, ignored_paths, reporter)
       visit_page_links(anemone, reporter)
     end
@@ -90,10 +90,14 @@ class Robinson
 
   def self.get_relevant_image_links_on_page(address, ignored_paths, page)
     links = []
-    page.doc.search('//img[@src]').select { |img|
-      links << page.to_absolute(img['src'])
-    }
-    links
+    doc = page.doc
+
+    unless doc.nil?
+      doc.search('//img[@src]').select { |img|
+        links << page.to_absolute(img['src'])
+      }
+      links
+    end
   end
 
   def self.is_relevant_link?(address, ignored_paths, uri)
