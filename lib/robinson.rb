@@ -60,8 +60,9 @@ class Robinson
   def self.crawl_all_pages_for_images(address, anemone, ignored_paths, reporter)
     anemone.focus_crawl { |page|
       puts "#{Time.now}: focus page is #{page.url}"
+      report_links_on_page(page, reporter)
       report_images_on_page(page, reporter)
-      get_relevant_image_links_on_page(address, ignored_paths, page)
+      get_relevant_links_on_page(address, ignored_paths, page) + get_relevant_image_links_on_page(address, ignored_paths, page)
     }
   end
 
@@ -77,8 +78,8 @@ class Robinson
   end
 
   def self.report_images_on_page(page, reporter)
-    page.doc.search('//img[@src]').each { |img|
-      reporter.on_see_link(page.to_absolute(img['src']))
+    image_links(page).each { |img|
+      reporter.on_see_link(img)
     }
   end
 
@@ -89,6 +90,12 @@ class Robinson
   end
 
   def self.get_relevant_image_links_on_page(address, ignored_paths, page)
+    image_links(page).select { |uri|
+      is_relevant_link?(address, ignored_paths, uri)
+    }
+  end
+
+  def self.image_links(page)
     links = []
     doc = page.doc
 
@@ -98,6 +105,7 @@ class Robinson
       }
       links
     end
+    links
   end
 
   def self.is_relevant_link?(address, ignored_paths, uri)
