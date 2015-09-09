@@ -20,17 +20,17 @@ describe 'Robinson' do
   describe 'command line usage' do
 
     it 'should return 0 status code on success' do
-      robinson_main [ host, '--ignoring','^/.+']
-      @@exit_code.should eq 0
+      robinson_main [host, '--ignoring', '^/.+']
+      expect(@@exit_code).to eq 0
     end
 
     it 'should allow throttling of requests' do
-      robinson_main([host, '--delay','0.5'])
-      @@exit_code.should eq 0
+      robinson_main([host, '--delay', '0.5'])
+      expect(@@exit_code).to eq 0
     end
 
     it 'should fail on unknown options' do
-      robinson_main([host,'--freeble-goodies'])
+      robinson_main([host, '--freeble-goodies'])
       expect(@@exit_code).to_not eq 0
     end
   end
@@ -54,23 +54,23 @@ describe 'Robinson' do
     end
 
     it 'should follow non-anchored links' do
-      visited_urls(@reporter).should include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
+      expect(visited_urls(@reporter)).to include *%W(http://#{host}/ http://#{host}/some-page http://#{host}/some-page?a=b)
     end
 
     it 'should follow path of path and anchor link' do
-      visited_urls(@reporter).should include "http://#{host}/some/path/with/anchor"
+      expect(visited_urls(@reporter)).to include "http://#{host}/some/path/with/anchor"
     end
 
     it 'should not follow simple in-page anchor' do
-      visited_urls(@reporter).should_not include "http://#{host}/#some-anchor"
+      expect(visited_urls(@reporter)).not_to include "http://#{host}/#some-anchor"
     end
 
     it 'should follow path of link with crappy anchor that has lots of non-html-spec chars in it' do
-      visited_urls(@reporter).should include "http://#{host}/path/with/crappy/anchor.in.it"
+      expect(visited_urls(@reporter)).to include "http://#{host}/path/with/crappy/anchor.in.it"
     end
   end
 
-  describe 'link following' do
+  describe 'images link following' do
 
     before :all do
       @reporter = TestExpectationReporter.new
@@ -79,14 +79,14 @@ describe 'Robinson' do
 
     it 'should follow path of img src' do
       puts visited_urls(@reporter)
-      visited_urls(@reporter).should include "http://#{host}/relative-test-image-link"
+      expect(visited_urls(@reporter)).to include "http://#{host}/relative-test-image-link"
     end
   end
 
 end
 
 def visited_urls(reporter)
-  reporter.visited_pages.map {|page| page.url.to_s}
+  reporter.visited_pages.map { |page| page.url.to_s }
 end
 
 def exit(code)
