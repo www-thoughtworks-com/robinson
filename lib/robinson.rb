@@ -85,13 +85,13 @@ class Robinson
 
   def self.get_relevant_links_on_page(address, ignored_paths, page)
     page.links.select { |uri|
-      is_relevant_link?(address, ignored_paths, uri)
+      is_relevant_link?(address, port_number_for(page), ignored_paths, uri)
     }
   end
 
   def self.get_relevant_image_links_on_page(address, ignored_paths, page)
     image_links(page).select { |uri|
-      is_relevant_link?(address, ignored_paths, uri)
+      is_relevant_link?(address, port_number_for(page), ignored_paths, uri)
     }
   end
 
@@ -108,7 +108,18 @@ class Robinson
     links
   end
 
-  def self.is_relevant_link?(address, ignored_paths, uri)
-    Link.new(uri).on_website?(address) && !ignored_paths.any? { |path| !!(path =~ uri.path) }
+  def self.is_relevant_link?(address, port, ignored_paths, uri)
+    Link.new(uri).on_website?(address, port) && !ignored_paths.any? { |path| !!(path =~ uri.path) }
+  end
+
+  private
+
+  def self.port_number_for(page)
+    if page.url.to_s.include? 'https'
+      port = '443'
+    else
+      port = '80'
+    end
+    port
   end
 end
