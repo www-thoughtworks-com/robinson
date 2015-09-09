@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'robinson'
-  s.version = '0.0.15'
+  s.version = '0.0.16'
   s.date = '2014-09-11'
   s.authors = 'damned'
   s.summary = 'A mainly working website link checker'
@@ -17,7 +17,8 @@ Gem::Specification.new do |s|
   )
   s.add_dependency 'anemone'
   s.add_dependency 'smart_colored'
-  
+
+
   s.executables << 'robinson'
   s.description = 'Robinson is a link checker based on anemone'
 end
