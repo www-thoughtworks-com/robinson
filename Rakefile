@@ -1,7 +1,7 @@
 require 'bundler/setup'
 require 'rspec/core/rake_task'
 
-task :default => %w(test:functional)
+task :default => %w(test:functional test:unit)
 
 namespace :test do
 
