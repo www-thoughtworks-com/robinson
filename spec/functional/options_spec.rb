@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative '../lib/options'
+require_relative '../../lib/options'
 require 'pp'
 
 describe 'Options' do

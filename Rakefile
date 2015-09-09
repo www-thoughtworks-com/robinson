@@ -7,7 +7,7 @@ namespace :test do
 
   desc 'Run functional tests'
   RSpec::Core::RakeTask.new(:functional) do |t|
-    t.pattern = 'spec/*_spec.rb'
+    t.pattern = 'spec/functional/*_spec.rb'
   end
 
 end

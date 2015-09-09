@@ -1,7 +1,7 @@
 require 'rspec'
 require 'sinatra'
 require 'tw-testing'
-require_relative '../lib/invocation'
+require_relative '../../lib/invocation'
 require_relative 'test_expectation_reporter'
 require 'uri'
 

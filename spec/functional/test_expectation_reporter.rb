@@ -1,4 +1,4 @@
-require_relative '../lib/reporter'
+require_relative '../../lib/reporter'
 
 class TestExpectationReporter < Reporter
 
