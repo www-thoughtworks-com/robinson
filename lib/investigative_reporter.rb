@@ -8,8 +8,10 @@ class InvestigativeReporter < Reporter
   def on_visit(page)
     if page.broken?
       @broken << page
+      puts "\nBroken links as of now: #{@broken.size}"
     else
       @ok << page
+      puts "\nWorking links as of now: #{@ok.size}"
     end
     page.puts
   end
