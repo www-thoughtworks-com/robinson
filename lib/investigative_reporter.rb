@@ -3,13 +3,13 @@ require 'reporter'
 class InvestigativeReporter < Reporter
   def initialize
     @broken = []
-    @ok = []
+    @ok = 0
   end
   def on_visit(page)
     if page.broken?
       @broken << page
     else
-      @ok << page
+      @ok += 1
     end
     page.puts
   end
@@ -17,11 +17,11 @@ class InvestigativeReporter < Reporter
     @broken.empty? ? success : failure
   end
   def success
-    puts "\nAll links (#{@ok.size}) check out OK."
+    puts "\nAll links (#{@ok}) check out OK."
     0
   end
   def failure
-    puts "\nBroken links (#{@broken.size} out of #{@ok.size}):"
+    puts "\nBroken links (#{@broken.size} out of #{@ok}):"
     @broken.each { |page| page.puts }
     @broken.size
   end
