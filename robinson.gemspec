@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'robinson'
-  s.version = '0.0.17'
+  s.version = '0.0.16'
   s.date = '2014-09-11'
   s.authors = 'damned'
   s.summary = 'A mainly working website link checker'
